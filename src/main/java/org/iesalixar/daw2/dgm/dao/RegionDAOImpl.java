@@ -7,6 +7,7 @@ import org.iesalixar.daw2.dgm.dao.DatabaseConnectionManager;
 import org.iesalixar.daw2.dgm.dao.RegionDAO;
 import org.iesalixar.daw2.dgm.entity.Region;
 
+
 public class RegionDAOImpl implements RegionDAO {
 
 
@@ -165,4 +166,3 @@ public class RegionDAOImpl implements RegionDAO {
 
 
 }
-

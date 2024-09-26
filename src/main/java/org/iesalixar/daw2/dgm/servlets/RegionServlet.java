@@ -1,5 +1,6 @@
 package org.iesalixar.daw2.dgm.servlets;
 
+
 import org.iesalixar.daw2.dgm.dao.RegionDAO;
 import org.iesalixar.daw2.dgm.dao.RegionDAOImpl;
 import org.iesalixar.daw2.dgm.dao.DatabaseConnectionManager;
@@ -266,4 +267,3 @@ public class RegionServlet extends HttpServlet {
         response.sendRedirect("regions"); // Redirigir al listado de regiones
     }
 }
-

@@ -1,5 +1,6 @@
 package org.iesalixar.daw2.dgm.entity;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -61,4 +62,3 @@ public class Region {
         this.name = name;
     }
 }
-
