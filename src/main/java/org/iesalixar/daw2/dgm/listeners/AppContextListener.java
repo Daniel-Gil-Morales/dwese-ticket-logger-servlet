@@ -58,4 +58,3 @@ public class AppContextListener implements ServletContextListener {
         DatabaseConnectionManager.closeConnection();
     }
 }
-

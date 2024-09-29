@@ -95,4 +95,3 @@ public class LanguageServlet extends HttpServlet {
         logger.info("Saliendo del método doGet del servlet LanguageServlet");
     }
 }
-

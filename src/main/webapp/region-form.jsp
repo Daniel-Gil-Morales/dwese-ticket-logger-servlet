@@ -1,6 +1,5 @@
 <%@ include file="header.jsp" %>
 
-
    <h1>
        <c:choose>
            <c:when test="${region == null}">
@@ -21,10 +20,27 @@
        <label for="code"><fmt:message key='msg.region-form.code' />:</label>
        <input type="text" name="code" id="code" value="${region != null ? region.code : ''}" required />
 
-
-       <label for="name"><fmt:message key='msg.region-form.name' />:</label>
-       <input type="text" name="name" id="name" value="${region != null ? region.name : ''}" required />
-
+       <select name="id_region">
+           <option value="1">Andalucía</option>
+           <option value="2">Aragón</option>
+           <option value="3">Asturias</option>
+           <option value="4">Islas Baleares</option>
+           <option value="5">Canarias</option>
+           <option value="6">Cantabria</option>
+           <option value="7">Castilla y León</option>
+           <option value="8">Castilla-La Mancha</option>
+           <option value="9">Cataluña</option>
+           <option value="10">Comunidad Valenciana</option>
+           <option value="11">Extremadura</option>
+           <option value="12">Galicia</option>
+           <option value="13">Madrid</option>
+           <option value="14">Murcia</option>
+           <option value="15">Navarra</option>
+           <option value="16">La Rioja</option>
+           <option value="17">País Vasco</option>
+           <option value="18">Ceuta</option>
+           <option value="19">Melilla</option>
+       </select>
 
        <!-- Cuando una cadena de caracteres incluye a otra esta debe llevar comillas simples -->
        <c:choose>
@@ -35,6 +51,7 @@
                <input type="submit" value="<fmt:message key='msg.region-form.update' />" />
            </c:otherwise>
        </c:choose>
+
    </form>
 
 

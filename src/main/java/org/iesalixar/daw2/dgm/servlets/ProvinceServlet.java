@@ -18,24 +18,27 @@ import java.util.List;
  * Servlet que maneja las operaciones CRUD para la entidad `Province`.
  * Utiliza `ProvinceDAO` para interactuar con la base de datos.
  */
-@WebServlet("/provinces")
+@WebServlet("/Provinces")
 public class ProvinceServlet extends HttpServlet {
 
-    // DAO para gestionar las operaciones de las provincias en la base de datos
-    private ProvinceDAO provinceDAO;
+
+    // DAO para gestionar las operaciones de las Provincees en la base de datos
+    private ProvinceDAO ProvinceDAO;
+
 
     @Override
     public void init() throws ServletException {
         try {
-            provinceDAO = new ProvinceDAOImpl();
+            ProvinceDAO = new ProvinceDAOImpl();
         } catch (Exception e) {
             throw new ServletException("Error al inicializar el ProvinceDAO", e);
         }
     }
 
+
     /**
      * Maneja las solicitudes GET al servlet. Según el parámetro "action", decide qué método invocar.
-     * @param request Solicitud HTTP.
+     * @param request  Solicitud HTTP.
      * @param response Respuesta HTTP.
      * @throws ServletException en caso de errores en el servlet.
      * @throws IOException en caso de errores de E/S.
@@ -47,20 +50,23 @@ public class ProvinceServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
 
+
         try {
+            // Manejo para evitar el valor null
             if (action == null) {
-                action = "list"; // Acción predeterminada
+                action = "list"; // O cualquier acción predeterminada que desees manejar
             }
+
 
             switch (action) {
                 case "new":
-                    showNewForm(request, response);  // Mostrar formulario para nueva provincia
+                    showNewForm(request, response);  // Mostrar formulario para nueva región
                     break;
                 case "edit":
-                    showEditForm(request, response);  // Mostrar formulario para editar provincia
+                    showEditForm(request, response);  // Mostrar formulario para editar región
                     break;
                 default:
-                    listProvinces(request, response);   // Listar todas las provincias
+                    listProvinces(request, response);   // Listar todas las Provincees
                     break;
             }
         } catch (SQLException ex) {
@@ -68,9 +74,10 @@ public class ProvinceServlet extends HttpServlet {
         }
     }
 
+
     /**
      * Maneja las solicitudes POST al servlet. Según el parámetro "action", decide qué método invocar.
-     * @param request Solicitud HTTP.
+     * @param request  Solicitud HTTP.
      * @param response Respuesta HTTP.
      * @throws ServletException en caso de errores en el servlet.
      * @throws IOException en caso de errores de E/S.
@@ -82,16 +89,16 @@ public class ProvinceServlet extends HttpServlet {
         try {
             switch (action) {
                 case "insert":
-                    insertProvince(request, response);  // Insertar nueva provincia
+                    insertProvince(request, response);  // Insertar nueva región
                     break;
                 case "update":
-                    updateProvince(request, response);  // Actualizar provincia existente
+                    updateProvince(request, response);  // Actualizar región existente
                     break;
                 case "delete":
-                    deleteProvince(request, response);  // Eliminar provincia
+                    deleteProvince(request, response);  // Eliminar región
                     break;
                 default:
-                    listProvinces(request, response);   // Listar todas las provincias
+                    listProvinces(request, response);   // Listar todas las Provincees
                     break;
             }
         } catch (SQLException ex) {
@@ -99,8 +106,9 @@ public class ProvinceServlet extends HttpServlet {
         }
     }
 
+
     /**
-     * Lista todas las provincias y las pasa como atributo a la vista `province.jsp`.
+     * Lista todas las Provincees y las pasa como atributo a la vista `Province.jsp`.
      * @param request  Solicitud HTTP.
      * @param response Respuesta HTTP.
      * @throws SQLException en caso de error en la consulta SQL.
@@ -109,13 +117,14 @@ public class ProvinceServlet extends HttpServlet {
      */
     private void listProvinces(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
-        List<Province> listProvinces = provinceDAO.listAllProvinces(); // Obtener todas las provincias desde el DAO
-        request.setAttribute("listProvinces", listProvinces);      // Pasar la lista de provincias a la vista
-        request.getRequestDispatcher("province.jsp").forward(request, response); // Redirigir a la página JSP
+        List<Province> listProvinces = ProvinceDAO.listAllProvinces(); // Obtener todas las Provincees desde el DAO
+        request.setAttribute("listProvinces", listProvinces);      // Pasar la lista de Provincees a la vista
+        request.getRequestDispatcher("Province.jsp").forward(request, response); // Redirigir a la página JSP
     }
 
+
     /**
-     * Muestra el formulario para crear una nueva provincia.
+     * Muestra el formulario para crear una nueva región.
      * @param request  Solicitud HTTP.
      * @param response Respuesta HTTP.
      * @throws ServletException en caso de error en el servlet.
@@ -123,11 +132,12 @@ public class ProvinceServlet extends HttpServlet {
      */
     private void showNewForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("province-form.jsp").forward(request, response); // Redirige a la vista para nueva provincia
+        request.getRequestDispatcher("Province-form.jsp").forward(request, response); // Redirige a la vista para nueva región
     }
 
+
     /**
-     * Muestra el formulario para editar una provincia existente.
+     * Muestra el formulario para editar una región existente.
      * @param request  Solicitud HTTP.
      * @param response Respuesta HTTP.
      * @throws SQLException en caso de error en la consulta SQL.
@@ -137,84 +147,111 @@ public class ProvinceServlet extends HttpServlet {
     private void showEditForm(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("id"));
-        Province existingProvince = provinceDAO.getProvinceById(id); // Obtener provincia por ID desde el DAO
-        request.setAttribute("province", existingProvince); // Pasar la provincia a la vista
-        request.getRequestDispatcher("province-form.jsp").forward(request, response); // Redirigir a la vista para editar
+        Province existingProvince = ProvinceDAO.getProvinceById(id);   // Obtener región por ID desde el DAO
+        request.setAttribute("Province", existingProvince);        // Pasar la región a la vista
+        request.getRequestDispatcher("Province-form.jsp").forward(request, response); // Redirigir a la vista para editar
     }
 
+
     /**
-     * Inserta una nueva provincia en la base de datos después de realizar validaciones.
-     * Verifica que el código de la provincia sea único y que los campos no estén vacíos.
+     * Inserta una nueva región en la base de datos después de realizar validaciones.
+     * Verifica que el código de la región sea único (ignorando mayúsculas) y que los campos
+     * de código y nombre no estén vacíos.
      *
      * @param request  la solicitud HTTP con los datos del formulario.
      * @param response la respuesta HTTP para redirigir o mostrar errores.
-     * @throws SQLException si ocurre un error en la base de datos.
-     * @throws IOException si ocurre un error de entrada/salida.
-     * @throws ServletException si ocurre un error en el procesamiento del servlet.
+     * @throws SQLException      si ocurre un error en la base de datos.
+     * @throws IOException       si ocurre un error de entrada/salida.
+     * @throws ServletException  si ocurre un error en el procesamiento del servlet.
      */
     private void insertProvince(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
         String code = request.getParameter("code").trim().toUpperCase(); // Convertir a mayúsculas
         String name = request.getParameter("name").trim();
-        int idRegion = Integer.parseInt(request.getParameter("id_region"));
+
 
         // Validaciones básicas
         if (code.isEmpty() || name.isEmpty()) {
             request.setAttribute("errorMessage", "El código y el nombre no pueden estar vacíos.");
-            request.getRequestDispatcher("province-form.jsp").forward(request, response);
+            request.getRequestDispatcher("Province-form.jsp").forward(request, response);
             return;
         }
 
-        // Validar si el código ya existe
-        if (provinceDAO.existsProvinceByCode(code)) {
-            request.setAttribute("errorMessage", "El código de la provincia ya existe.");
-            request.getRequestDispatcher("province-form.jsp").forward(request, response);
+
+        // Validar si el código ya existe ignorando mayúsculas
+        if (ProvinceDAO.existsProvinceByCode(code)) {
+            request.setAttribute("errorMessage", "El código de la región ya existe.");
+            request.getRequestDispatcher("Province-form.jsp").forward(request, response);
             return;
         }
 
-        Province newProvince = new Province(code, name, idRegion);
-        provinceDAO.insertProvince(newProvince);
-        response.sendRedirect("provinces");
+
+        Province newProvince = new Province(code, name);
+        try {
+            ProvinceDAO.insertProvince(newProvince);
+        } catch (SQLException e) {
+            if (e.getSQLState().equals("23505")) { // Código SQL para unique constraint violation
+                request.setAttribute("errorMessage", "El código de la región debe ser único.");
+                request.getRequestDispatcher("Province-form.jsp").forward(request, response);
+            } else {
+                throw e;
+            }
+        }
+        response.sendRedirect("Provinces");
     }
 
+
     /**
-     * Actualiza una provincia existente en la base de datos después de realizar validaciones.
-     * Verifica que el código de la provincia sea único para otras provincias y que los campos no estén vacíos.
+     * Actualiza una región existente en la base de datos después de realizar validaciones.
+     * Verifica que el código de la región sea único para otras Provincees (ignorando mayúsculas)
+     * y que los campos de código y nombre no estén vacíos.
      *
      * @param request  la solicitud HTTP con los datos del formulario.
      * @param response la respuesta HTTP para redirigir o mostrar errores.
-     * @throws SQLException si ocurre un error en la base de datos.
-     * @throws IOException si ocurre un error de entrada/salida.
-     * @throws ServletException si ocurre un error en el procesamiento del servlet.
+     * @throws SQLException      si ocurre un error en la base de datos.
+     * @throws IOException       si ocurre un error de entrada/salida.
+     * @throws ServletException  si ocurre un error en el procesamiento del servlet.
      */
     private void updateProvince(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
         int id = Integer.parseInt(request.getParameter("id"));
         String code = request.getParameter("code").trim().toUpperCase(); // Convertir a mayúsculas
         String name = request.getParameter("name").trim();
-        int idRegion = Integer.parseInt(request.getParameter("id_region"));
+
 
         // Validaciones básicas
         if (code.isEmpty() || name.isEmpty()) {
             request.setAttribute("errorMessage", "El código y el nombre no pueden estar vacíos.");
-            request.getRequestDispatcher("province-form.jsp").forward(request, response);
+            request.getRequestDispatcher("Province-form.jsp").forward(request, response);
             return;
         }
 
-        // Validar si el código ya existe para otra provincia
-        if (provinceDAO.existsProvinceByCodeAndNotId(code, id)) {
-            request.setAttribute("errorMessage", "El código de la provincia ya existe para otra provincia.");
-            request.getRequestDispatcher("province-form.jsp").forward(request, response);
+
+        // Validar si el código ya existe para otra región
+        if (ProvinceDAO.existsProvinceByCodeAndNotId(code, id)) {
+            request.setAttribute("errorMessage", "El código de la región ya existe para otra región.");
+            request.getRequestDispatcher("Province-form.jsp").forward(request, response);
             return;
         }
 
-        Province updatedProvince = new Province(id, code, name, idRegion);
-        provinceDAO.updateProvince(updatedProvince);
-        response.sendRedirect("provinces");
+
+        Province updatedProvince = new Province(id, code, name);
+        try {
+            ProvinceDAO.updateProvince(updatedProvince);
+        } catch (SQLException e) {
+            if (e.getSQLState().equals("23505")) { // Código SQL para unique constraint violation
+                request.setAttribute("errorMessage", "El código de la región debe ser único.");
+                request.getRequestDispatcher("Province-form.jsp").forward(request, response);
+            } else {
+                throw e;
+            }
+        }
+        response.sendRedirect("Provinces");
     }
 
+
     /**
-     * Elimina una provincia de la base de datos según su ID.
+     * Elimina una región de la base de datos según su ID.
      * @param request  Solicitud HTTP.
      * @param response Respuesta HTTP.
      * @throws SQLException en caso de error en la consulta SQL.
@@ -223,7 +260,8 @@ public class ProvinceServlet extends HttpServlet {
     private void deleteProvince(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException {
         int id = Integer.parseInt(request.getParameter("id"));
-        provinceDAO.deleteProvince(id);  // Eliminar provincia usando el DAO
-        response.sendRedirect("provinces"); // Redirigir al listado de provincias
+        ProvinceDAO.deleteProvince(id);  // Eliminar región usando el DAO
+        response.sendRedirect("Provinces"); // Redirigir al listado de Provincees
     }
 }
+

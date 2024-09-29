@@ -37,7 +37,6 @@ public class RegionDAOImpl implements RegionDAO {
         return regions;
     }
 
-
     public void insertRegion(Region region) throws SQLException {
         String query = "INSERT INTO regions (code, name) VALUES (?, ?)";
 

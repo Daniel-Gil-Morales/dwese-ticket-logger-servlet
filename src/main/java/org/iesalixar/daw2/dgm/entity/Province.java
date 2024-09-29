@@ -46,24 +46,16 @@ public class Province {
     // Campo que almacena el nombre completo de la provincia, como "Cádiz" o "Málaga".
     private String name;
 
-    // Campo que almacena el identificador de la región a la que pertenece la provincia.
-    private int id_region;
-
     /**
      * Este es un constructor personalizado que no incluye el campo `id`.
      * Se utiliza para crear instancias de `Province` cuando no es necesario o no se conoce el `id` de la provincia
      * (por ejemplo, antes de insertar la provincia en la base de datos, donde el `id` es autogenerado).
      * @param code Código de la provincia.
      * @param name Nombre de la provincia.
-     * @param id_region Identificador de la región a la que pertenece la provincia.
      */
-    public Province(String code, String name, int id_region) {
+    public Province(String code, String name) {
         this.code = code;
         this.name = name;
-        this.id_region = id_region;
     }
 
-    public int getIdRegion() {
-        return id_region;
-    }
 }

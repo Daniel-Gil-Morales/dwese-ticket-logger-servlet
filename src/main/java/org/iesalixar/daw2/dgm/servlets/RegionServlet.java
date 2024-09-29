@@ -15,15 +15,20 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Logger;
 
 
 /**
  * Servlet que maneja las operaciones CRUD para la entidad `Region`.
  * Utiliza `RegionDAO` para interactuar con la base de datos.
  */
-@WebServlet("/regions")
+@WebServlet("/")
 public class RegionServlet extends HttpServlet {
 
+    /**
+     * Para que salgan los loggers
+     */
+    private static final Logger logger = Logger.getLogger(RegionServlet.class.getName());
 
     // DAO para gestionar las operaciones de las regiones en la base de datos
     private RegionDAO regionDAO;
@@ -188,6 +193,8 @@ public class RegionServlet extends HttpServlet {
             return;
         }
 
+        // Logger antes de la inserción
+        logger.info("Creando nueva región con código: " + code);
 
         Region newRegion = new Region(code, name);
         try {
