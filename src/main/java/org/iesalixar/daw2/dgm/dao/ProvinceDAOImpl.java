@@ -1,6 +1,7 @@
 package org.iesalixar.daw2.dgm.dao;
 
 import org.iesalixar.daw2.dgm.entity.Province;
+import org.iesalixar.daw2.dgm.entity.Region;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,36 +18,44 @@ public class ProvinceDAOImpl implements ProvinceDAO {
      * @throws SQLException
      */
     public List<Province> listAllProvinces() throws SQLException {
-        List<Province> Provinces = new ArrayList<>();
-        String query = "SELECT * FROM Provinces";
+        List<Province> provinces = new ArrayList<>();
+        String query = "select p.id id_province, p.code code_province, p.name name_province, r.id id_region, r.code code_region, r.name name_region from provinces p inner join regions r on p.id_region = r.id";
 
-
-        // Obtener una nueva conexión para cada operación
         try (Connection connection = DatabaseConnectionManager.getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(query)) {
 
+            while (resultSet.next()){
+                int id_province = resultSet.getInt("id_province");
+                String code_province = resultSet.getString("code_province");
+                String name_province = resultSet.getString("name_province");
 
-            while (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                String code = resultSet.getString("code");
-                String name = resultSet.getString("name");
-                Provinces.add(new Province(id, code, name));
+                int id_region = resultSet.getInt("id_region");
+                String code_region = resultSet.getString("code_region");
+                String name_region = resultSet.getString("name_region");
+
+                Region region = new Region(id_region, code_region, name_region);
+                Province province = new Province(id_province, code_province, name_province, region);
+                provinces.add(province);
             }
+
         }
-        return Provinces;
+
+        return provinces;
     }
 
-    public void insertProvince(Province Province) throws SQLException {
+    public void insertProvince(Province province) throws SQLException {
         String query = "INSERT INTO Provinces (code, name) VALUES (?, ?)";
 
 
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
+            int regionId = province.getRegion().getId();
 
-            preparedStatement.setString(1, Province.getCode());
-            preparedStatement.setString(2, Province.getName());
+            preparedStatement.setString(1, province.getCode());
+            preparedStatement.setString(2, province.getName());
+            preparedStatement.setInt(3, province.getRegion().getId());
             preparedStatement.executeUpdate();
         }
     }
@@ -110,7 +119,9 @@ public class ProvinceDAOImpl implements ProvinceDAO {
             if (resultSet.next()) {
                 String code = resultSet.getString("code");
                 String name = resultSet.getString("name");
-                Province = new Province(id, code, name);
+                int regionId = resultSet.getInt("id_region");
+                Region region = new Region(regionId, code, name);
+                Province = new Province(id, code, name, region);
             }
         }
         return Province;
@@ -127,7 +138,7 @@ public class ProvinceDAOImpl implements ProvinceDAO {
      */
     @Override
     public boolean existsProvinceByCode(String code) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM Provinces WHERE UPPER(code) = ?";
+        String sql = "SELECT COUNT(*) FROM provinces WHERE UPPER(code) = ?";
         try (Connection connection = DatabaseConnectionManager.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, code.toUpperCase());

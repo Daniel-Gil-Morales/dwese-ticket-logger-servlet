@@ -1,14 +1,16 @@
 package org.iesalixar.daw2.dgm.servlets;
 
-import org.iesalixar.daw2.dgm.dao.ProvinceDAO;
-import org.iesalixar.daw2.dgm.dao.ProvinceDAOImpl;
-import org.iesalixar.daw2.dgm.dao.DatabaseConnectionManager;
-import org.iesalixar.daw2.dgm.entity.Province;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.iesalixar.daw2.dgm.dao.ProvinceDAO;
+import org.iesalixar.daw2.dgm.dao.ProvinceDAOImpl;
+import org.iesalixar.daw2.dgm.dao.RegionDAO;
+import org.iesalixar.daw2.dgm.dao.RegionDAOImpl;
+import org.iesalixar.daw2.dgm.entity.Province;
+import org.iesalixar.daw2.dgm.entity.Region;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -23,17 +25,19 @@ public class ProvinceServlet extends HttpServlet {
 
 
     // DAO para gestionar las operaciones de las Provincees en la base de datos
-    private ProvinceDAO ProvinceDAO;
-
+    private ProvinceDAO provinceDAO;
+    private RegionDAO regionDAO;
 
     @Override
     public void init() throws ServletException {
-        try {
-            ProvinceDAO = new ProvinceDAOImpl();
+        try{
+            provinceDAO = new ProvinceDAOImpl();
+            regionDAO = new RegionDAOImpl();
         } catch (Exception e) {
             throw new ServletException("Error al inicializar el ProvinceDAO", e);
         }
     }
+
 
 
     /**
@@ -44,67 +48,30 @@ public class ProvinceServlet extends HttpServlet {
      * @throws IOException en caso de errores de E/S.
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         String action = request.getParameter("action");
         response.setContentType("text/html;charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
-
-
         try {
-            // Manejo para evitar el valor null
             if (action == null) {
-                action = "list"; // O cualquier acción predeterminada que desees manejar
+                action = "list";
             }
-
 
             switch (action) {
                 case "new":
-                    showNewForm(request, response);  // Mostrar formulario para nueva región
+                    showNewForm(request, response);
                     break;
                 case "edit":
-                    showEditForm(request, response);  // Mostrar formulario para editar región
                     break;
                 default:
-                    listProvinces(request, response);   // Listar todas las Provincees
+                    listProvinces(request, response);
                     break;
             }
-        } catch (SQLException ex) {
+        } catch (SQLException | IOException ex) {
             throw new ServletException(ex);
         }
     }
 
-
-    /**
-     * Maneja las solicitudes POST al servlet. Según el parámetro "action", decide qué método invocar.
-     * @param request  Solicitud HTTP.
-     * @param response Respuesta HTTP.
-     * @throws ServletException en caso de errores en el servlet.
-     * @throws IOException en caso de errores de E/S.
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String action = request.getParameter("action");
-        try {
-            switch (action) {
-                case "insert":
-                    insertProvince(request, response);  // Insertar nueva región
-                    break;
-                case "update":
-                    updateProvince(request, response);  // Actualizar región existente
-                    break;
-                case "delete":
-                    deleteProvince(request, response);  // Eliminar región
-                    break;
-                default:
-                    listProvinces(request, response);   // Listar todas las Provincees
-                    break;
-            }
-        } catch (SQLException ex) {
-            throw new ServletException(ex);
-        }
-    }
 
 
     /**
@@ -115,11 +82,10 @@ public class ProvinceServlet extends HttpServlet {
      * @throws IOException en caso de error de E/S.
      * @throws ServletException en caso de error en el servlet.
      */
-    private void listProvinces(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException, ServletException {
-        List<Province> listProvinces = ProvinceDAO.listAllProvinces(); // Obtener todas las Provincees desde el DAO
-        request.setAttribute("listProvinces", listProvinces);      // Pasar la lista de Provincees a la vista
-        request.getRequestDispatcher("Province.jsp").forward(request, response); // Redirigir a la página JSP
+    private void listProvinces(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+        List<Province> listProvinces = provinceDAO.listAllProvinces();
+        request.setAttribute("listProvinces", listProvinces);
+        request.getRequestDispatcher("province.jsp").forward(request, response); // Redirigir a la página JSP
     }
 
 
@@ -131,8 +97,10 @@ public class ProvinceServlet extends HttpServlet {
      * @throws IOException en caso de error de E/S.
      */
     private void showNewForm(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        request.getRequestDispatcher("Province-form.jsp").forward(request, response); // Redirige a la vista para nueva región
+            throws ServletException, IOException, SQLException {
+        List<Region> listRegions = regionDAO.listAllRegions();
+        request.setAttribute("listRegions", listRegions);
+        request.getRequestDispatcher("province-form.jsp").forward(request, response); // Redirige a la vista para nueva región
     }
 
 
@@ -147,7 +115,7 @@ public class ProvinceServlet extends HttpServlet {
     private void showEditForm(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("id"));
-        Province existingProvince = ProvinceDAO.getProvinceById(id);   // Obtener región por ID desde el DAO
+        Province existingProvince = provinceDAO.getProvinceById(id);   // Obtener región por ID desde el DAO
         request.setAttribute("Province", existingProvince);        // Pasar la región a la vista
         request.getRequestDispatcher("Province-form.jsp").forward(request, response); // Redirigir a la vista para editar
     }
@@ -168,27 +136,28 @@ public class ProvinceServlet extends HttpServlet {
             throws SQLException, IOException, ServletException {
         String code = request.getParameter("code").trim().toUpperCase(); // Convertir a mayúsculas
         String name = request.getParameter("name").trim();
+        String id_region = request.getParameter("id_region");
 
 
         // Validaciones básicas
-        if (code.isEmpty() || name.isEmpty()) {
-            request.setAttribute("errorMessage", "El código y el nombre no pueden estar vacíos.");
-            request.getRequestDispatcher("Province-form.jsp").forward(request, response);
+        if (code.isEmpty() || name.isEmpty() || id_region.isEmpty()) {
+            request.setAttribute("errorMessage", "El código y el nombre y la communidad autónoma no pueden estar vacíos.");
+            request.getRequestDispatcher("province-form.jsp").forward(request, response);
             return;
         }
 
 
         // Validar si el código ya existe ignorando mayúsculas
-        if (ProvinceDAO.existsProvinceByCode(code)) {
-            request.setAttribute("errorMessage", "El código de la región ya existe.");
-            request.getRequestDispatcher("Province-form.jsp").forward(request, response);
+        if (provinceDAO.existsProvinceByCode(code)) {
+            request.setAttribute("errorMessage", "El código de la provincia ya existe.");
+            request.getRequestDispatcher("province-form.jsp").forward(request, response);
             return;
         }
 
 
         Province newProvince = new Province(code, name);
         try {
-            ProvinceDAO.insertProvince(newProvince);
+            provinceDAO.insertProvince(newProvince);
         } catch (SQLException e) {
             if (e.getSQLState().equals("23505")) { // Código SQL para unique constraint violation
                 request.setAttribute("errorMessage", "El código de la región debe ser único.");
@@ -228,7 +197,7 @@ public class ProvinceServlet extends HttpServlet {
 
 
         // Validar si el código ya existe para otra región
-        if (ProvinceDAO.existsProvinceByCodeAndNotId(code, id)) {
+        if (provinceDAO.existsProvinceByCodeAndNotId(code, id)) {
             request.setAttribute("errorMessage", "El código de la región ya existe para otra región.");
             request.getRequestDispatcher("Province-form.jsp").forward(request, response);
             return;
@@ -237,7 +206,7 @@ public class ProvinceServlet extends HttpServlet {
 
         Province updatedProvince = new Province(id, code, name);
         try {
-            ProvinceDAO.updateProvince(updatedProvince);
+            provinceDAO.updateProvince(updatedProvince);
         } catch (SQLException e) {
             if (e.getSQLState().equals("23505")) { // Código SQL para unique constraint violation
                 request.setAttribute("errorMessage", "El código de la región debe ser único.");
@@ -260,7 +229,7 @@ public class ProvinceServlet extends HttpServlet {
     private void deleteProvince(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException {
         int id = Integer.parseInt(request.getParameter("id"));
-        ProvinceDAO.deleteProvince(id);  // Eliminar región usando el DAO
+        provinceDAO.deleteProvince(id);  // Eliminar región usando el DAO
         response.sendRedirect("Provinces"); // Redirigir al listado de Provincees
     }
 }

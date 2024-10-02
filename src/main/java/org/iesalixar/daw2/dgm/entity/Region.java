@@ -1,10 +1,8 @@
 package org.iesalixar.daw2.dgm.entity;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 
 /**
  * La clase `Region` representa una entidad que modela una región dentro de la base de datos.
@@ -21,34 +19,27 @@ import lombok.NoArgsConstructor;
 // - Un método `canEqual()` que verifica si una instancia puede ser igual a otra.
 // Esto evita tener que escribir manualmente todos estos métodos y mejora la mantenibilidad del código.
 
-
 @NoArgsConstructor  // Esta anotación genera un constructor sin argumentos (constructor vacío),
 //  es útil cuando quieres crear un objeto `Region` sin inicializarlo inmediatamente
 // con valores. Esto es muy útil en frameworks como Hibernate o JPA,
 // que requieren un constructor vacío para la creación de entidades.
 
-
 @AllArgsConstructor  // Esta anotación genera un constructor que acepta todos los campos como parámetros (id, code, name).
 // Este constructor es útil cuando necesitas crear una instancia completamente inicializada de `Region`.
 // Ejemplo: new Region(1, "01", "Andalucía");
 
-
 public class Region {
-
 
     // Campo que almacena el identificador único de la región. Este campo suele ser autogenerado
     // por la base de datos, lo que lo convierte en un buen candidato para una clave primaria.
     private int id;
 
-
     // Campo que almacena el código de la región, normalmente una cadena corta que identifica la región.
     // Ejemplo: "01" para Andalucía.
     private String code;
 
-
     // Campo que almacena el nombre completo de la región, como "Andalucía" o "Cataluña".
     private String name;
-
 
     /**
      * Este es un constructor personalizado que no incluye el campo `id`.

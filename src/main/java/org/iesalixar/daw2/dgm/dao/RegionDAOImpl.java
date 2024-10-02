@@ -3,8 +3,7 @@ package org.iesalixar.daw2.dgm.dao;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import org.iesalixar.daw2.dgm.dao.DatabaseConnectionManager;
-import org.iesalixar.daw2.dgm.dao.RegionDAO;
+
 import org.iesalixar.daw2.dgm.entity.Region;
 
 
@@ -13,6 +12,7 @@ public class RegionDAOImpl implements RegionDAO {
 
     /**
      * Lista todas las regiones de la base de datos.
+     *
      * @return Lista de regiones
      * @throws SQLException
      */

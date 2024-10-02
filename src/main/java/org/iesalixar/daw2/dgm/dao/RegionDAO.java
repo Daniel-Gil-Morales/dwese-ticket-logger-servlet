@@ -1,6 +1,7 @@
 package org.iesalixar.daw2.dgm.dao;
 
 import org.iesalixar.daw2.dgm.entity.Region;
+
 import java.sql.SQLException;
 import java.util.List;
 
@@ -8,7 +9,7 @@ import java.util.List;
 public interface RegionDAO {
 
 
-    List<Region> listAllRegions() throws SQLException;
+    List<org.iesalixar.daw2.dgm.entity.Region> listAllRegions() throws SQLException;
     void insertRegion(Region region) throws SQLException;
     void updateRegion(Region region) throws SQLException;
     void deleteRegion(int id) throws SQLException;
