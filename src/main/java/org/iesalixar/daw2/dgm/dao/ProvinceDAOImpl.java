@@ -45,13 +45,10 @@ public class ProvinceDAOImpl implements ProvinceDAO {
     }
 
     public void insertProvince(Province province) throws SQLException {
-        String query = "INSERT INTO Provinces (code, name) VALUES (?, ?)";
-
+        String query = "INSERT INTO provinces (code, name, id_region) VALUES (?, ?, ?)";
 
         try (Connection connection = DatabaseConnectionManager.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
-            int regionId = province.getRegion().getId();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setString(1, province.getCode());
             preparedStatement.setString(2, province.getName());
@@ -66,15 +63,14 @@ public class ProvinceDAOImpl implements ProvinceDAO {
      * @param Province Región a actualizar
      * @throws SQLException
      */
-    public void updateProvince(Province Province) throws SQLException {
-        String query = "UPDATE Provinces SET code = ?, name = ? WHERE id = ?";
+    public void updateProvince(Province province) throws SQLException {
+        String query = "UPDATE provinces SET code = ?, name = ? WHERE id = ?"; // Cambiado "Provinces" a "provinces"
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
-
-            preparedStatement.setString(1, Province.getCode());
-            preparedStatement.setString(2, Province.getName());
-            preparedStatement.setInt(3, Province.getId());
+            preparedStatement.setString(1, province.getCode());
+            preparedStatement.setString(2, province.getName());
+            preparedStatement.setInt(3, province.getId());
             preparedStatement.executeUpdate();
         }
     }
@@ -85,11 +81,11 @@ public class ProvinceDAOImpl implements ProvinceDAO {
      * @param id ID de la región a eliminar
      * @throws SQLException
      */
+    @Override
     public void deleteProvince(int id) throws SQLException {
-        String query = "DELETE FROM Provinces WHERE id = ?";
+        String query = "DELETE FROM provinces WHERE id = ?";
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
 
             preparedStatement.setInt(1, id);
             preparedStatement.executeUpdate();
@@ -106,13 +102,11 @@ public class ProvinceDAOImpl implements ProvinceDAO {
      * @throws SQLException si ocurre un error en la consulta SQL.
      */
     public Province getProvinceById(int id) throws SQLException {
-        String query = "SELECT * FROM Provinces WHERE id = ?";
-        Province Province = null;
-
+        String query = "SELECT * FROM provinces WHERE id = ?"; // Cambiado "Provinces" a "provinces"
+        Province province = null;
 
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
 
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -121,10 +115,10 @@ public class ProvinceDAOImpl implements ProvinceDAO {
                 String name = resultSet.getString("name");
                 int regionId = resultSet.getInt("id_region");
                 Region region = new Region(regionId, code, name);
-                Province = new Province(id, code, name, region);
+                province = new Province(id, code, name, region);
             }
         }
-        return Province;
+        return province;
     }
 
 
@@ -162,7 +156,7 @@ public class ProvinceDAOImpl implements ProvinceDAO {
      */
     @Override
     public boolean existsProvinceByCodeAndNotId(String code, int id) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM Provinces WHERE UPPER(code) = ? AND id != ?";
+        String sql = "SELECT COUNT(*) FROM provinces WHERE UPPER(code) = ? AND id != ?";
         try (Connection connection = DatabaseConnectionManager.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, code.toUpperCase());
@@ -173,6 +167,7 @@ public class ProvinceDAOImpl implements ProvinceDAO {
             }
         }
     }
+
 
 
 }
